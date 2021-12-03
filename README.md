@@ -256,11 +256,11 @@ Diyelimki tasarımımızı yaptık şimdi sıra name alanlarını düzenleme
 
 Tamamdır tasarım alanını bitirdik şimdi sıra Authentication da bunun için öncelikle Web.config gelelim ve aşağıda belirttiğimiz kodları yazalım /Login/Index bizim Login sayfamızın tasarımının olduğu yer
 
-[]()
+![5](https://user-images.githubusercontent.com/84273839/144657199-4147046e-aa01-4a99-bf68-265716bb17a8.jpg)
 
 Eğer biz tüm sayfaları kilitlemek istiyorsak ki önerim budur çünkü teker teker her action ımızın üstüne Authentication yazmak bizi uğraştırır oyüzden direk tüm sayfaları kilitleyeceğiz Global.asax a geliyoruz ve ilk sıradaki kodu yazıyoruz
 
-![Inkedcapture_20211130133135532_LI.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ce656921-104e-453d-9ecb-aa421cccaaa1/Inkedcapture_20211130133135532_LI.jpg)
+![6](https://user-images.githubusercontent.com/84273839/144657068-a74e05d6-d399-4c32-9b21-fffa14e8ac30.jpg)
 
 ## Rolleme (Yetkiler)
 
@@ -268,18 +268,20 @@ Rolleme Rolleme dediğimiz şey kullanıcı yetkisidir mesela A kullanıcı B ku
 
 <add name="testRoleProvider" type="Login.Login.AdminRoleProvider"/> burda yazdığımız koddaki name alanı o an oluşturduğumuz bir tanımlama type alanında yaptığımız şey ise Login dosyamızdaki AdminRoleProvider yani rollerin tanımlamasını yaptığımız yerin namespace i
 
-![Inkedcapture_20211202221049164_LI.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/0238db7e-4b5e-4d27-a0ae-48d7b0575a4c/Inkedcapture_20211202221049164_LI.jpg)
+![Inkedcapture_20211202221049164_LI](https://user-images.githubusercontent.com/84273839/144657300-40bdb5f8-7659-4b87-81d6-b90ed9165f7d.jpg)
 
 Hatta hemen AdminRoleProvider ımızı kuralım projemize gelip yeni bir dosya oluşturalım ve adı Login olsun dosyanın içine AdminRoleProvider adında bir class oluşturalım ve classımıza bir kalıtım verelim
 
-![capture_20211202221851641.bmp](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4703798b-b5ba-4945-ab93-91de786c3a7e/capture_20211202221851641.bmp)
+![2](https://user-images.githubusercontent.com/84273839/144656213-34e7727a-d03e-48ac-98da-9db296707aff.jpg)
+
 
 RoleProvider aslında bir Interface niteliğinde yani içerisinde dolu metotlar taşıyor biz bu metotları AdminRoleProvider üstüne gelerek dosymıza import ediyoruz  GetRolersForUsers alanına geliyoruz
 
 Aslında içerisinde bir hata fırlatıyor bunun nedeni ise dosya hatalı görünmesin diye neyse içerisindeki throw kodunu silip aşağıdaki kodu giriyoruz burda yaptığımız şey database deki username ile metot üzerindeki username eşitse ilk seçeneği seç anlamında bir kod yazdık ve bunu kullanici ya atadık ardından dizin şeklinde kullanici.Role dedik burda dediğimiz Role Database imizdeki Role Artık rollemeyi yaptık sıra hangisinin hangi sayfaya girebileceğine
 
-![capture_20211202222131197.bmp](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a5d63f63-b546-4da1-940b-a0aaacf14266/capture_20211202222131197.bmp)
+![3](https://user-images.githubusercontent.com/84273839/144656356-92dfb8e4-f990-438f-aaf1-097ded6ae86d.jpg)
 
 Bunun için HomeContorller da istediğimiz sayfaya rol atamasını yapabiliyoruz aynı bu şekilde burda istersen birden çok rolde seçebilirsiniz artık B rolü ile girişimiz yok
+![4](https://user-images.githubusercontent.com/84273839/144656447-64291917-2fbf-403f-8279-4d229322e242.jpg)
 
-![capture_20211202222440641.bmp](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/706f247f-08a3-4f9e-a0c2-262c5b768e91/capture_20211202222440641.bmp)
+
