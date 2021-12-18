@@ -1,4 +1,3 @@
-# AspNetMvc5
 # Database First
 
 ## Entity Framework Kurulumu
@@ -197,6 +196,89 @@ Bu uzun bir açıklama metnidir
 
 ---
 
+# Fotoğraf ekleme (Statik dosya üzerinden)
+
+Bu metot için herhangi bir veri tabanı kolonuna ihtiyacın yok bunun için yapman gekren şu
+
+Öncelikle Create.cshtml de şu inputu girin
+
+```html
+<div class="form-group">
+        <label class="control-label col-md-2">Product Image</label>
+        <div class="col-md-10">
+            <input type="file" name="ProductImage" id="ProductImage" class="form-control" />
+        </div>
+    </div>
+```
+
+Bizden ProductImage controller ı arıyor fakat biz sahip değiliz
+
+bunun için öncelikle kodumuzun html helper ındaki şu değişikliği yapmalyıız:
+
+```csharp
+@using (Html.BeginForm(null,null,FormMethod.Post,new {enctype="multipart/form-data" }))
+```
+
+Ardından ProductController dan Create metoduna bir parametre girmeliyiz
+
+bu parametre şu
+
+```csharp
+public ActionResult Create([Bind(Include = "ProductId,ProductName,RefCategoryId,ProductDescription,ProductPrice")] Products products,
+            HttpPostedFileBase ProductImage)
+//Aslında burda bizim işimize yarıyan yer mor olan
+{
+
+if (ModelState.IsValid)
+  {
+    db.Products.Add(products);
+    db.SaveChanges();
+
+    if (ProductImage != null && ProductImage.ContentLength>0)
+    {
+				// Dosyayı /Image den çek ürün ıd sine göre isimlendir ve .jpg e çevir
+        string FilePath = Path.Combine(Server.MapPath("~/Image"), products.ProductId + ".jpg");
+        ProductImage.SaveAs(FilePath);//File Path farklı kaydet
+    }
+
+    return RedirectToAction("Index");
+
+}
+```
+
+### Birden fazla fotoğraf ekeleme (Uploading a File (Or Files) With ASP.NET MVC)
+
+Bu konu için size bir link bırakıcam burdan çok daha detaylı bilgi alabilirsiniz
+
+[http://haacked.com/archive/2010/07/16/uploading-files-with-aspnetmvc.aspx/](http://haacked.com/archive/2010/07/16/uploading-files-with-aspnetmvc.aspx/)
+
+### Ürünü silerken Fotoğrafıda silme
+
+Burda yaptığımız şey şu ürünleri sildiğimiz zaman dosyamızdan fotoğrafı silmeyecek çünkü fotoğraflar çoktan eklenmiş olucak bunu silmek için bu kod çok Önemli
+
+```csharp
+public ActionResult DeleteConfirmed(int id)
+        {
+            Products products = db.Products.Find(id);
+            db.Products.Remove(products);
+            db.SaveChanges();
+            //---------------------------------------
+            string FilePath = Path.Combine(Server.MapPath("~/Image"), products.ProductId + ".jpg");
+            FileInfo fi = new FileInfo(FilePath);
+
+            if (fi.Exists)
+            {
+                fi.Delete();
+            }
+            //Burda yaptıklarımız Ürünü sildiğimizde Fotoğrafıda otomatik olarak silsin 
+            //---------------------------------------
+
+            return RedirectToAction("Index");
+        }
+```
+
+---
+
 # Authentication (Kimlik Doğrulama) ve Login işlemi
 
 Controller ımızı da kuralım LoginController.cs adında 
@@ -256,11 +338,13 @@ Diyelimki tasarımımızı yaptık şimdi sıra name alanlarını düzenleme
 
 Tamamdır tasarım alanını bitirdik şimdi sıra Authentication da bunun için öncelikle Web.config gelelim ve aşağıda belirttiğimiz kodları yazalım /Login/Index bizim Login sayfamızın tasarımının olduğu yer
 
-![5](https://user-images.githubusercontent.com/84273839/144657199-4147046e-aa01-4a99-bf68-265716bb17a8.jpg)
+![5.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f186608a-f926-4a38-b915-8f46705d0ab1/5.jpg)
 
-Eğer biz tüm sayfaları kilitlemek istiyorsak ki önerim budur çünkü teker teker her action ımızın üstüne Authentication yazmak bizi uğraştırır oyüzden direk tüm sayfaları kilitleyeceğiz Global.asax a geliyoruz ve ilk sıradaki kodu yazıyoruz
+Eğer biz tüm sayfaları kilitlemek istiyorsak ki önerim budur çünkü teker teker her action ımızın üstüne Authentication yazmak bizi uğraştırır oyüzden direk tüm sayfaları kilitleyeceğiz Global.asax a 
 
-![6](https://user-images.githubusercontent.com/84273839/144657068-a74e05d6-d399-4c32-9b21-fffa14e8ac30.jpg)
+geliyoruz ve ilk sıradaki kodu yazıyoruz
+
+![6.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b10fd702-eb69-4640-a2ad-97c5c091bdde/6.jpg)
 
 ## Rolleme (Yetkiler)
 
@@ -268,20 +352,61 @@ Rolleme Rolleme dediğimiz şey kullanıcı yetkisidir mesela A kullanıcı B ku
 
 <add name="testRoleProvider" type="Login.Login.AdminRoleProvider"/> burda yazdığımız koddaki name alanı o an oluşturduğumuz bir tanımlama type alanında yaptığımız şey ise Login dosyamızdaki AdminRoleProvider yani rollerin tanımlamasını yaptığımız yerin namespace i
 
-![Inkedcapture_20211202221049164_LI](https://user-images.githubusercontent.com/84273839/144657300-40bdb5f8-7659-4b87-81d6-b90ed9165f7d.jpg)
+![Inkedcapture_20211202221049164_LI.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/0238db7e-4b5e-4d27-a0ae-48d7b0575a4c/Inkedcapture_20211202221049164_LI.jpg)
 
 Hatta hemen AdminRoleProvider ımızı kuralım projemize gelip yeni bir dosya oluşturalım ve adı Login olsun dosyanın içine AdminRoleProvider adında bir class oluşturalım ve classımıza bir kalıtım verelim
 
-![2](https://user-images.githubusercontent.com/84273839/144656213-34e7727a-d03e-48ac-98da-9db296707aff.jpg)
-
+![2.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f9c8f87d-43d7-421d-9f24-89430b672de2/2.jpg)
 
 RoleProvider aslında bir Interface niteliğinde yani içerisinde dolu metotlar taşıyor biz bu metotları AdminRoleProvider üstüne gelerek dosymıza import ediyoruz  GetRolersForUsers alanına geliyoruz
 
 Aslında içerisinde bir hata fırlatıyor bunun nedeni ise dosya hatalı görünmesin diye neyse içerisindeki throw kodunu silip aşağıdaki kodu giriyoruz burda yaptığımız şey database deki username ile metot üzerindeki username eşitse ilk seçeneği seç anlamında bir kod yazdık ve bunu kullanici ya atadık ardından dizin şeklinde kullanici.Role dedik burda dediğimiz Role Database imizdeki Role Artık rollemeyi yaptık sıra hangisinin hangi sayfaya girebileceğine
 
-![3](https://user-images.githubusercontent.com/84273839/144656356-92dfb8e4-f990-438f-aaf1-097ded6ae86d.jpg)
+![3.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/71dbe46b-de27-4b81-a5a5-5fd6223b3e4f/3.jpg)
 
 Bunun için HomeContorller da istediğimiz sayfaya rol atamasını yapabiliyoruz aynı bu şekilde burda istersen birden çok rolde seçebilirsiniz artık B rolü ile girişimiz yok
-![4](https://user-images.githubusercontent.com/84273839/144656447-64291917-2fbf-403f-8279-4d229322e242.jpg)
 
+![4.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9959a12f-6444-4141-89a1-50f56ebf73e2/4.jpg)
 
+---
+
+# Harici Metin Editörü dahil etme
+
+Öncelikle editor olarak bunu kullanıyoruz: [https://ckeditor.com](https://ckeditor.com/)
+
+Peki bunu nasıl kurucam bunun için visual studio>Nuget package management>Browse>Ckeditor indir
+
+Sonrasında Bundle.config dizinimize gelip şu kodu yazın 
+
+```csharp
+bundles.Add(new ScriptBundle("~/Sripts/ckeditor").Include(
+                "~/Scripts/ckeditor/ckeditor.js"));
+```
+
+Ardından html dosyamıza gelip kullanıcağımız dizine şu kodu yapıştırın ve library i dahil edin
+
+```csharp
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/ckeditor")
+}
+
+//Ayriyetten bunu _Layout.cshtml e ekleyin
+
+**@Scripts.Render("~/Scripts/jquery-3.4.1.min.js")
+@Scripts.Render("~/ckeditor/ckeditor.js");
+@Scripts.Render("~/ckeditor/ckfinder/ckfinder.js");
+@Scripts.Render("~/Scripts/jquery.validate.js")**
+```
+
+Arından gene html imizden editoru eklemek için tek yapmamız gereken classına ckeditor eklemek olucak
+
+class="ckeditor"
+
+Not: ckeditor ile fotoğraf eklemek istediğimiz kodumuz bunu tehdidt algılayabilir bunu düzeltmek için şu attribute eklememiz gerek
+
+```csharp
+[ValidateInput(false)] //Ckeditor de fotoğraf eklemeye izin verdik
+```
+
+---
