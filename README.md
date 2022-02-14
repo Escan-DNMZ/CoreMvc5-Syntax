@@ -1,5 +1,3 @@
-# Database First
-
 ## Entity Framework Kurulumu
 
 Models>Add>New İtem>Bu işlem için Visual Studio IDE ile projeye **ADO.NET Entity Data Model** ve **EF Designer from database** seçeneği ile veritabanı bağlantısı yapılarak işlem yapılacak tabloların eklenmesi yeterli olacaktır. Eğer istediğiniz data gelmez ise **New** **Connection** diyerek **Server** **Name** alanına serverınızın adını yazın önrek ./SQLEXPRES sonrada alt tarafa database. adını yazın 
